@@ -1,16 +1,11 @@
-<img src="./logo.svg" width="128" align="right">
-
-<br/>
-<br/>
-<br/>
-
 # nvidia-update
 
-Checks for a new version of the Nvidia Driver, downloads and installs it.
+Designed to run on a portable USB for quick installation on many different machines. Checks for a new version of the Nvidia Driver, downloads and installs it. Additionally it ignores DCH drivers if they are installed and dowloads the drivers from NVIDIA regardless. Perfect for newly setup Windows systems where the automatic drivers haven't been installed yet.
 
 ## Usage
 
-* Download `nvidia.ps1`
+* Download `nvidia.ps1` and place it in the root of your USB drive.
+* Download 7-Zip if you haven't already done so (the script will do this by itself if it doesn't detect an installation) and install it in the root on your USB (should install in a `7-Zip` folder by itself).
 * Right click and select `Run with PowerShell`
 * If the script finds a newer version of the nvidia driver online it will download and install it.
 
@@ -39,14 +34,14 @@ schtasks /run /tn "Nvidia-Updater"
 
 ## Requirements / Dependencies
 
-7-Zip or WinRar are needed to extract the drivers.
+7-Zip is needed to extract the drivers.
 
 
 ## FAQ
 
 Q. How do we check for the latest driver version from Nvidia website ?
 
-> We use the NVIDIA [Advanced Driver Search](https://www.nvidia.com/Download/Find.aspx).
+> The script uses the NVIDIA [Advanced Driver Search](https://www.nvidia.com/Download/Find.aspx).
 >
 > Example:
 > ```https://www.nvidia.com/Download/processFind.aspx?psid=101&pfid=845&osid=57&lid=1&whql=1&ctk=0&dtcid=0```
@@ -57,12 +52,3 @@ Q. How do we check for the latest driver version from Nvidia website ?
 > * **lid**: Language ID (e.g. _English (US)_: 1)
 > * **whql**: Driver channel (_Certified_: 0, Beta: 1)
 > * **dtcid**: Windows Driver Type (_Standard_: 0, DCH: 1)
-
-Q. Why DCH drivers are not supported ?
-
-> While the DCH driver is exactly the same as the Standard one, the way DCH drivers are packaged differs.
->
-> * Standard: To upgrade, you have either to download/install manually new drivers, or let GeForce Experience doing it.
-> * DCH: Windows Update will download and install the NVIDIA DCH Display Driver.
->
-> For more informations, you can read the [NVIDIA Display Drivers for Windows 10 FAQ](https://nvidia.custhelp.com/app/answers/detail/a_id/4777/~/nvidia-dch%2Fstandard-display-drivers-for-windows-10-faq)
