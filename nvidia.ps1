@@ -83,6 +83,14 @@ catch {
 #>
 Write-Host "Installed version `t$ins_version"
 
+# Checking internet connection
+if (!(Get-NetRoute | ? DestinationPrefix -eq '0.0.0.0/0' | Get-NetIPInterface | where ConnectionState -eq 'Connected')) {
+	Write-Host -ForegroundColor Yellow "No internet connection. After resolving connectivity issues, please try running this script again."
+	Write-Host "Press any key to exit..."
+
+	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+	exit
+}
 
 # Checking latest driver version from Nvidia website
 $link = Invoke-WebRequest -Uri 'https://www.nvidia.com/Download/processFind.aspx?psid=101&pfid=816&osid=57&lid=1&whql=1&lang=en-us&ctk=0&dtcid=0' -Method GET -UseBasicParsing
