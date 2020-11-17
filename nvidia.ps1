@@ -1,4 +1,3 @@
-# This script is designed to install the bare essential Nvidia drivers
 # This will not install Nvidia GeForce or Shadowplay
 # There are options below for customizing the install
 # The defaults should suffice for most users
@@ -15,42 +14,42 @@ $scheduleTask = $false  # Creates a Scheduled Task to run to check for driver up
 $scheduleDay = "Sunday" # When should the scheduled task run (Default = Sunday)
 $scheduleTime = "12pm"  # The time the scheduled task should run (Default = 12pm)
 
-
+$archiverProgram = 
 # Checking if 7zip or WinRAR are installed
 # Check 7zip install path on registry
-$7zipinstalled = $false 
-if ((Test-path HKLM:\SOFTWARE\7-Zip\) -eq $true) {
-    $7zpath = Get-ItemProperty -path  HKLM:\SOFTWARE\7-Zip\ -Name Path
-    $7zpath = $7zpath.Path
-    $7zpathexe = $7zpath + "7z.exe"
-    if ((Test-Path $7zpathexe) -eq $true) {
-        $archiverProgram = $7zpathexe
-        $7zipinstalled = $true 
-    }    
-}
-elseif ($7zipinstalled -eq $false) {
-    if ((Test-path HKLM:\SOFTWARE\WinRAR) -eq $true) {
-        $winrarpath = Get-ItemProperty -Path HKLM:\SOFTWARE\WinRAR -Name exe64 
-        $winrarpath = $winrarpath.exe64
-        if ((Test-Path $winrarpath) -eq $true) {
-            $archiverProgram = $winrarpath
-        }
-    }
-}
-else {
-    Write-Host "Sorry, but it looks like you don't have a supported archiver."
+#$7zipinstalled = $false 
+#if ((Test-path $PSScriptRoot\7-Zip) -eq $true) {
+    #$7zpath = Get-ItemProperty $PSScriptRoot\7-Zip
+    #$7zpath = $7zpath.7z.exe
+    #$7zpathexe = $PSScriptRoot\7-Zip\7z.exe
+    #if ((Test-Path $7zpathexe) -eq $true) {
+        #$archiverProgram = $7zpathexe
+        #$7zipinstalled = $true 
+    #}    
+#}
+#elseif ($7zipinstalled -eq $false) {
+    #if ((Test-path HKLM:\SOFTWARE\WinRAR) -eq $true) {
+        #$winrarpath = Get-ItemProperty -Path HKLM:\SOFTWARE\WinRAR -Name exe64 
+        #$winrarpath = $winrarpath.exe64
+        #if ((Test-Path $winrarpath) -eq $true) {
+            #$archiverProgram = $winrarpath
+        #}
+    #}
+#}
+#else {
+<#    Write-Host "Sorry, but it looks like you don't have a supported archiver."
     Write-Host ""
     while ($choice -notmatch "[y|n]") {
         $choice = read-host "Would you like to install 7-Zip now? (Y/N)"
     }
     if ($choice -eq "y") {
-        # Download and silently install 7-zip if the user presses y
+         #Download and silently install 7-zip if the user presses y
         $7zip = "https://www.7-zip.org/a/7z1900-x64.exe"
         $output = "$PSScriptRoot\7Zip.exe"
         (New-Object System.Net.WebClient).DownloadFile($7zip, $output)
        
         Start-Process "7Zip.exe" -Wait -ArgumentList "/S"
-        # Delete the installer once it completes
+         #Delete the installer once it completes
         Remove-Item "$PSScriptRoot\7Zip.exe"
     }
     else {
@@ -59,18 +58,19 @@ else {
         exit
     }
 }
-   
+#>   
 
 
 # Checking currently installed driver version
-Write-Host "Attempting to detect currently installed driver version..."
-if (Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\nvlddmkm -Name 'DCHUVen' -ErrorAction Ignore) {
-    Write-Host -ForegroundColor Yellow "DCH driver are not supported. Windows Update will download and install the NVIDIA DCH Display Driver."
-    Write-Host "Press any key to exit..."
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit
-}
+#Write-Host "Attempting to detect currently installed driver version..."
+#if (Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\nvlddmkm -Name 'DCHUVen' -ErrorAction Ignore) {
+    #Write-Host -ForegroundColor Yellow "DCH driver are not supported. Windows Update will download and install the NVIDIA DCH Display Driver."
+    #Write-Host "Press any key to exit..."
+    #$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    #exit
+#}
 
+<#
 try {
     $ins_version = (Get-WmiObject Win32_PnPSignedDriver | Where-Object { $_.devicename -like "*nvidia*" -and $_.devicename -notlike "*audio*" -and $_.devicename -notlike "*USB*" -and $_.devicename -notlike "*SHIELD*" }).DriverVersion.SubString(7).Remove(1, 1).Insert(3, ".")
 }
@@ -80,6 +80,7 @@ catch {
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit
 }
+#>
 Write-Host "Installed version `t$ins_version"
 
 
@@ -142,9 +143,11 @@ else {
 
 # Extracting setup files
 $extractFolder = "$nvidiaTempFolder\$version"
-$filesToExtract = "Display.Driver HDAudio NVI2 PhysX EULA.txt ListDevices.txt setup.cfg setup.exe"
+$filesToExtract = "Display.Driver HDAudio NVI2 PhysX PPC EULA.txt ListDevices.txt setup.cfg setup.exe"
 Write-Host "Download finished, extracting the files now..."
 
+Start-Process -FilePath "$PSScriptRoot\7-Zip\7z.exe" -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
+<#
 if ($7zipinstalled) {
     Start-Process -FilePath $archiverProgram -NoNewWindow -ArgumentList "x -bso0 -bsp1 -bse1 -aoa $dlFile $filesToExtract -o""$extractFolder""" -wait
 }
@@ -157,6 +160,7 @@ else {
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit
 }
+#>
 
 
 # Remove unneeded dependencies from setup.cfg
@@ -191,7 +195,7 @@ Remove-Item $nvidiaTempFolder -Recurse -Force
 
 
 # Driver installed, requesting a reboot
-Write-Host -ForegroundColor Green "Driver installed. You may need to reboot to finish installation."
+Write-Host -ForegroundColor Green "Driver installed. KEKW"
 Write-Host "Would you like to reboot now?"
 $Readhost = Read-Host "(Y/N) Default is no"
 Switch ($ReadHost) {
