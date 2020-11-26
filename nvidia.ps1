@@ -20,13 +20,21 @@ Write-Host "https://github.com/uptivuptiz/nvidia-update"
 # Checking internet connection
 if (!(Get-NetRoute | ? DestinationPrefix -eq '0.0.0.0/0' | Get-NetIPInterface | where ConnectionState -eq 'Connected')) {
 	Write-Host -ForegroundColor Yellow "No internet connection... Try again?"
+	
 	$Readhost = Read-Host "(Y/N) Default is yes"
 Switch ($ReadHost) {
-    Y { start powershell {"$PSScriptRoot\nvidia.ps1"}; exit }
-    N { exit }
-    Default { start powershell {"$PSScriptRoot\nvidia.ps1"}; exit }
-	
+    Y { & "$PSScriptRoot\nvidia.ps1"; Start-Sleep -s 2 }
+    N { Write-Host "Exiting script in 5 seconds."; Start-Sleep -s 5 }
+    Default { & "$PSScriptRoot\nvidia.ps1"; Start-Sleep -s 2 }
 }
+	
+	<#$Readhost = Read-Host "(Y/N) Default is yes"
+Switch ($ReadHost) {
+    Y { start powershell {"$PSScriptRoot\nvidia.ps1"}; Start-Sleep -Milliseconds 1 }
+    N { Start-Sleep -s 5 }
+    Default { start powershell {"$PSScriptRoot\nvidia.ps1"};  }
+	
+}#>
 
 	
 }
@@ -69,7 +77,7 @@ else {
 $nvidiaTempFolder = "$folder\NVIDIA"
 New-Item -Path $nvidiaTempFolder -ItemType Directory 2>&1 | Out-Null
 
-
+ 
 # Generating the download link
 $url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-whql.exe"
 $rp_url = "https://international.download.nvidia.com/Windows/$version/$version-desktop-$windowsVersion-$windowsArchitecture-international-whql-rp.exe"
