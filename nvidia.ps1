@@ -14,13 +14,21 @@ $scheduleTask = $false  # Creates a Scheduled Task to run to check for driver up
 $scheduleDay = "Sunday" # When should the scheduled task run (Default = Sunday)
 $scheduleTime = "12pm"  # The time the scheduled task should run (Default = 12pm)
 
+#Github repo link
+Write-Host "https://github.com/uptivuptiz/nvidia-update"
+
 # Checking internet connection
 if (!(Get-NetRoute | ? DestinationPrefix -eq '0.0.0.0/0' | Get-NetIPInterface | where ConnectionState -eq 'Connected')) {
-	Write-Host -ForegroundColor Yellow "No internet connection. After resolving connectivity issues, please try running this script again."
-	Write-Host "Press any key to exit..."
+	Write-Host -ForegroundColor Yellow "No internet connection... Try again?"
+	$Readhost = Read-Host "(Y/N) Default is yes"
+Switch ($ReadHost) {
+    Y { start powershell {"$PSScriptRoot\nvidia.ps1"}; exit }
+    N { exit }
+    Default { start powershell {"$PSScriptRoot\nvidia.ps1"}; exit }
+	
+}
 
-	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-	exit
+	
 }
 
 # Checking latest driver version from Nvidia website
@@ -120,13 +128,9 @@ Remove-Item $nvidiaTempFolder -Recurse -Force
 
 # Driver installed, requesting a reboot
 Write-Host -ForegroundColor Green "Driver installed. KEKW"
-Write-Host "Would you like to reboot now?"
-$Readhost = Read-Host "(Y/N) Default is no"
-Switch ($ReadHost) {
-    Y { Write-host "Rebooting now..."; Start-Sleep -s 2; Restart-Computer }
-    N { Write-Host "Exiting script in 5 seconds."; Start-Sleep -s 5 }
-    Default { Write-Host "Exiting script in 5 seconds"; Start-Sleep -s 5 }
-}
+Write-Host "Press enter to close script."
+$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+	exit
 
 
 # End of script
